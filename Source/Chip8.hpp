@@ -10,6 +10,7 @@ class Chip8 {
 public:
   void LoadROM(char const *filename);
   Chip8();
+  void Cycle();
 
   uint8_t registers[16]{};
   uint8_t memory[4096]{};
@@ -27,6 +28,12 @@ private:
   std::default_random_engine randGen;
   std::uniform_int_distribution<unsigned int> dist;
 
+  void Table0();
+  void Table8();
+  void TableE();
+  void TableF();
+
+  void OP_NULL(); // Dummy function
   void OP_00E0(); // set memory to 0
   void OP_00EE(); // RET
   void OP_1nnn(); // JMP
@@ -63,4 +70,13 @@ private:
   void OP_Fx55(); // Store every register from V0 till Vx into memory, starting
                   // at index
   void OP_Fx65(); // Read registers from V0-Vx from memory, starting at index
+
+  typedef void (Chip8::*Chip8Func)(); // Defines Chip8Func as a pointer to a
+                                      // function of the Chip8 class that
+                                      // returns void and takes no parameters
+  Chip8Func table[0xF + 1];
+  Chip8Func table0[0xE + 1];
+  Chip8Func table8[0xE + 1];
+  Chip8Func tableE[0xE + 1];
+  Chip8Func tableF[0x65 + 1];
 };
